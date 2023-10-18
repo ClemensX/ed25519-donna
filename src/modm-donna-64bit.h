@@ -18,6 +18,12 @@
 typedef uint64_t bignum256modm_element_t;
 typedef bignum256modm_element_t bignum256modm[5];
 
+static void printB256modm(const char* txt, const bignum256modm_element_t* a) {
+	int i;
+    printf("%s ", txt); for (i = 0; i < 5; i++) printLong(a[i]); printf("\n");
+}
+
+
 static const bignum256modm modm_m = {
 	0x12631a5cf5d3ed, 
 	0xf9dea2f79cd658, 
@@ -72,15 +78,21 @@ barrett_reduce256_modm(bignum256modm r, const bignum256modm q1, const bignum256m
 	   q2 = mu * q1
 	   q3 = (q2 / 256(32+1)) = q2 / (2^8)^(32+1) = q2 >> 264 */
 	mul64x64_128(c, modm_mu[0], q1[3])                 mul64x64_128(mul, modm_mu[3], q1[0]) add128(c, mul) mul64x64_128(mul, modm_mu[1], q1[2]) add128(c, mul) mul64x64_128(mul, modm_mu[2], q1[1]) add128(c, mul) shr128(f, c, 56);
+	//print128("c", c);
 	mul64x64_128(c, modm_mu[0], q1[4]) add128_64(c, f) mul64x64_128(mul, modm_mu[4], q1[0]) add128(c, mul) mul64x64_128(mul, modm_mu[3], q1[1]) add128(c, mul) mul64x64_128(mul, modm_mu[1], q1[3]) add128(c, mul) mul64x64_128(mul, modm_mu[2], q1[2]) add128(c, mul)
+	//print128("c", c);
 	f = lo128(c); q3[0] = (f >> 40) & 0xffff; shr128(f, c, 56);
+	//print64t("f", f);
+	//print128("c", c);
 	mul64x64_128(c, modm_mu[4], q1[1]) add128_64(c, f) mul64x64_128(mul, modm_mu[1], q1[4]) add128(c, mul) mul64x64_128(mul, modm_mu[2], q1[3]) add128(c, mul) mul64x64_128(mul, modm_mu[3], q1[2]) add128(c, mul)
+	//print128("c", c);
 	f = lo128(c); q3[0] |= (f << 16) & 0xffffffffffffff; q3[1] = (f >> 40) & 0xffff; shr128(f, c, 56);
 	mul64x64_128(c, modm_mu[4], q1[2]) add128_64(c, f) mul64x64_128(mul, modm_mu[2], q1[4]) add128(c, mul) mul64x64_128(mul, modm_mu[3], q1[3]) add128(c, mul)
 	f = lo128(c); q3[1] |= (f << 16) & 0xffffffffffffff; q3[2] = (f >> 40) & 0xffff; shr128(f, c, 56);
 	mul64x64_128(c, modm_mu[4], q1[3]) add128_64(c, f) mul64x64_128(mul, modm_mu[3], q1[4]) add128(c, mul)
 	f = lo128(c); q3[2] |= (f << 16) & 0xffffffffffffff; q3[3] = (f >> 40) & 0xffff; shr128(f, c, 56);
 	mul64x64_128(c, modm_mu[4], q1[4]) add128_64(c, f)
+	//print128("c", c);
 	f = lo128(c); q3[3] |= (f << 16) & 0xffffffffffffff; q3[4] = (f >> 40) & 0xffff; shr128(f, c, 56);
 	q3[4] |= (f << 16);
 
@@ -102,8 +114,10 @@ barrett_reduce256_modm(bignum256modm r, const bignum256modm q1, const bignum256m
 	pb += r2[3]; b = lt_modm(r1[3], pb); r[3] = (r1[3] - pb + (b << 56)); pb = b;
 	pb += r2[4]; b = lt_modm(r1[4], pb); r[4] = (r1[4] - pb + (b << 40)); 
 
+    printB256modm("r b256", r);
 	reduce256_modm(r);
 	reduce256_modm(r);
+    printB256modm("r b256", r);
 }
 
 
@@ -164,6 +178,7 @@ expand256_modm(bignum256modm out, const unsigned char *in, size_t len) {
 	x[5] = U8TO64_LE(work + 40);
 	x[6] = U8TO64_LE(work + 48);
 	x[7] = U8TO64_LE(work + 56);
+	//printf("x8 "); for (int i = 0; i < 8; i++) printLong(x[i]); printf("\n");
 
 	/* r1 = (x mod 256^(32+1)) = x mod (2^8)(31+1) = x & ((1 << 264) - 1) */
 	out[0] = (                         x[0]) & 0xffffffffffffff;
@@ -171,6 +186,7 @@ expand256_modm(bignum256modm out, const unsigned char *in, size_t len) {
 	out[2] = ((x[ 1] >> 48) | (x[ 2] << 16)) & 0xffffffffffffff;
 	out[3] = ((x[ 2] >> 40) | (x[ 3] << 24)) & 0xffffffffffffff;
 	out[4] = ((x[ 3] >> 32) | (x[ 4] << 32)) & 0x0000ffffffffff;
+    //printB256modm("b256", out);
 
 	/* under 252 bits, no need to reduce */
 	if (len < 32)
@@ -184,6 +200,7 @@ expand256_modm(bignum256modm out, const unsigned char *in, size_t len) {
 	q1[4] = ((x[ 7] >> 24)                );
 
 	barrett_reduce256_modm(out, q1, out);
+    printB256modm("q b256", out);
 }
 
 static void

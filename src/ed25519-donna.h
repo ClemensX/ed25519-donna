@@ -8,6 +8,8 @@
 		Bo-Yin Yang
 */
 
+#include <stdio.h>
+#include <string.h>
 
 #include "ed25519-donna-portable.h"
 

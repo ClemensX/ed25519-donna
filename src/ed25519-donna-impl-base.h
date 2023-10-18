@@ -303,10 +303,14 @@ ge25519_windowb_equal(uint32_t b, uint32_t c) {
 static void
 ge25519_scalarmult_base_choose_niels(ge25519_niels *t, const uint8_t table[256][96], uint32_t pos, signed char b) {
 	bignum25519 neg;
+	printf("b %02x\n", b);
 	uint32_t sign = (uint32_t)((unsigned char)b >> 7);
+	printf("sign %08x\n", sign);
 	uint32_t mask = ~(sign - 1);
+	printf("mask %08x\n", mask);
 	uint32_t u = (b + mask) ^ mask;
 	uint32_t i;
+	printf("u %08x\n", u);
 
 	/* ysubx, xaddy, t2d in packed form. initialize to ysubx = 1, xaddy = 1, t2d = 0 */
 	uint8_t packed[96] = {0};
@@ -315,16 +319,24 @@ ge25519_scalarmult_base_choose_niels(ge25519_niels *t, const uint8_t table[256][
 
 	for (i = 0; i < 8; i++)
 		curve25519_move_conditional_bytes(packed, table[(pos * 8) + i], ge25519_windowb_equal(u, i + 1));
+	print96("packed", packed);
 
 	/* expand in to t */
 	curve25519_expand(t->ysubx, packed +  0);
+	//printBig("ysubx", t->ysubx);
 	curve25519_expand(t->xaddy, packed + 32);
+	//printBig("xaddy", t->xaddy);
 	curve25519_expand(t->t2d  , packed + 64);
+	//printBig("t2d", t->t2d);
 
 	/* adjust for sign */
 	curve25519_swap_conditional(t->ysubx, t->xaddy, sign);
 	curve25519_neg(neg, t->t2d);
 	curve25519_swap_conditional(t->t2d, neg, sign);
+	printBig("ysubx", t->ysubx);
+	printBig("xaddy", t->xaddy);
+	printBig("t2d", t->t2d);
+	exit(0);
 }
 
 #endif /* HAVE_GE25519_SCALARMULT_BASE_CHOOSE_NIELS */
@@ -338,6 +350,7 @@ ge25519_scalarmult_base_niels(ge25519 *r, const uint8_t basepoint_table[256][96]
 	ge25519_niels t;
 
 	contract256_window4_modm(b, s);
+	print64("b", (unsigned char*)b);
 
 	ge25519_scalarmult_base_choose_niels(&t, basepoint_table, 0, b[1]);
 	curve25519_sub_reduce(r->x, t.xaddy, t.ysubx);

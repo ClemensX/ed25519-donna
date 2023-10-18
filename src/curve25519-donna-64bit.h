@@ -310,6 +310,7 @@ curve25519_expand(bignum25519 out, const unsigned char *in) {
 		x2 = F(16);
 		x3 = F(24);
 	}
+	//printf("x8 "); printLong(x0); printLong(x1); printLong(x2); printLong(x3); printLong(reduce_mask_51); printf("\n");
 
 	out[0] = x0 & reduce_mask_51; x0 = (x0 >> 51) | (x1 << 13);
 	out[1] = x0 & reduce_mask_51; x1 = (x1 >> 38) | (x2 << 26);

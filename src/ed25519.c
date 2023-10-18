@@ -14,10 +14,15 @@
 #define ED25519_FN2(fn,suffix) ED25519_FN3(fn,suffix)
 #define ED25519_FN(fn)         ED25519_FN2(fn,ED25519_SUFFIX)
 
+//#include "curve25519-donna-64bit.h"
+#include "print.h"
 #include "ed25519-donna.h"
 #include "ed25519.h"
 #include "ed25519-randombytes.h"
 #include "ed25519-hash.h"
+
+
+
 
 /*
 	Generates a (extsk[0..31]) and aExt (extsk[32..63])
@@ -25,10 +30,13 @@
 
 DONNA_INLINE static void
 ed25519_extsk(hash_512bits extsk, const ed25519_secret_key sk) {
+	//print64("extsk", extsk);
 	ed25519_hash(extsk, sk, 32);
+	//print64("sk SHA", extsk);
 	extsk[0] &= 248;
 	extsk[31] &= 127;
 	extsk[31] |= 64;
+	//print64("sk SHA", extsk);
 }
 
 static void
@@ -48,6 +56,8 @@ ED25519_FN(ed25519_publickey) (const ed25519_secret_key sk, ed25519_public_key p
 	hash_512bits extsk;
 
 	/* A = aB */
+	printf("publickey()\n");
+	print32("sk", sk);
 	ed25519_extsk(extsk, sk);
 	expand256_modm(a, extsk, 32);
 	ge25519_scalarmult_base_niels(&A, ge25519_niels_base_multiples, a);
