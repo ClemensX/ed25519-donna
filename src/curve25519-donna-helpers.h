@@ -38,6 +38,7 @@ curve25519_recip(bignum25519 out, const bignum25519 z) {
 	bignum25519 ALIGN(16) a,t0,b;
 
 	/* 2 */ curve25519_square_times(a, z, 1); /* a = 2 */
+	printBig("a", a);
 	/* 8 */ curve25519_square_times(t0, a, 2);
 	/* 9 */ curve25519_mul_noinline(b, t0, z); /* b = 9 */
 	/* 11 */ curve25519_mul_noinline(a, b, a); /* a = 11 */

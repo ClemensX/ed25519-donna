@@ -35,12 +35,12 @@ static void print96(const char* txt, const unsigned char* a) {
     printf("%s ", txt); for (i = 0; i < 96; i++) printf("%02x", a[i]); printf("\n");
 }
 
-static void print128(const char* txt, __uint128_t a) {
+/*static void print128(const char* txt, __uint128_t a) {
     uint64_t h = a >> 64;
     uint64_t l = (uint64_t) a;
 	int i;
     printf("%s ", txt); printf("%016llx %016llx\n", h, l);
-}
+}*/
 
 #if defined(__cplusplus)
 }

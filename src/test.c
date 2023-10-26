@@ -5,6 +5,8 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
+#include "print.h"
 #include "ed25519.h"
 
 #include "test-ticks.h"
@@ -260,12 +262,16 @@ static void test1() {
 	// signatureString = "e5564300c360ac729086e2cc806e828a84877f1eb8e5d974d873e065224901555fb8821590a33bacc61e39701cf9b46bd25bf5f0595bbe24655141438e7a100b";
 	unsigned char *secretKey = dataset[0].sk;
 	unsigned char *publicKey = dataset[0].pk;
+	unsigned char *msg = (unsigned char*)dataset[0].m;
+	size_t msgLen = 0;
 	ed25519_public_key pubk;
 	ed25519_publickey(secretKey, pubk);
 	ed25519_signature sig;
 	//publicKey[0] = 0x44;
 	edassert_equal(publicKey, pubk, 32 /*sizeof(pubk)*/, "public key didn't match");
 	//printf("%02x\n", publicKey[0]);
+	ed25519_sign(msg, msgLen, secretKey, pubk, sig);
+	print64("sig", sig);
 }
 
 int

@@ -181,8 +181,10 @@ ge25519_pack(unsigned char r[32], const ge25519 *p) {
 	bignum25519 tx, ty, zi;
 	unsigned char parity[32];
 	curve25519_recip(zi, p->z);
+	printBig("zi", zi);
 	curve25519_mul(tx, p->x, zi);
 	curve25519_mul(ty, p->y, zi);
+	printBig("ty", ty);
 	curve25519_contract(r, ty);
 	curve25519_contract(parity, tx);
 	r[31] ^= ((parity[0] & 1) << 7);
@@ -336,7 +338,6 @@ ge25519_scalarmult_base_choose_niels(ge25519_niels *t, const uint8_t table[256][
 	printBig("ysubx", t->ysubx);
 	printBig("xaddy", t->xaddy);
 	printBig("t2d", t->t2d);
-	exit(0);
 }
 
 #endif /* HAVE_GE25519_SCALARMULT_BASE_CHOOSE_NIELS */
@@ -354,10 +355,13 @@ ge25519_scalarmult_base_niels(ge25519 *r, const uint8_t basepoint_table[256][96]
 
 	ge25519_scalarmult_base_choose_niels(&t, basepoint_table, 0, b[1]);
 	curve25519_sub_reduce(r->x, t.xaddy, t.ysubx);
+	printBig("sub_red r.x", r->x);
 	curve25519_add_reduce(r->y, t.xaddy, t.ysubx);
+	printBig("add_red r.x", r->y);
 	memset(r->z, 0, sizeof(bignum25519));
 	curve25519_copy(r->t, t.t2d);
 	r->z[0] = 2;	
+	printBig("r.z", r->z);
 	for (i = 3; i < 64; i += 2) {
 		ge25519_scalarmult_base_choose_niels(&t, basepoint_table, i / 2, b[i]);
 		ge25519_nielsadd2(r, &t);
@@ -373,5 +377,9 @@ ge25519_scalarmult_base_niels(ge25519 *r, const uint8_t basepoint_table[256][96]
 		ge25519_scalarmult_base_choose_niels(&t, basepoint_table, i / 2, b[i]);
 		ge25519_nielsadd2(r, &t);
 	}
+		printBig("r.x", r->x);
+		printBig("r.y", r->y);
+		printBig("r.z", r->z);
+		printBig("r.t", r->t);
 }
 

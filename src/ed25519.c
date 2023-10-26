@@ -15,6 +15,8 @@
 #define ED25519_FN(fn)         ED25519_FN2(fn,ED25519_SUFFIX)
 
 //#include "curve25519-donna-64bit.h"
+#include <stdio.h>
+#include <stdint.h>
 #include "print.h"
 #include "ed25519-donna.h"
 #include "ed25519.h"
@@ -71,6 +73,7 @@ ED25519_FN(ed25519_sign) (const unsigned char *m, size_t mlen, const ed25519_sec
 	bignum256modm r, S, a;
 	ge25519 ALIGN(16) R;
 	hash_512bits extsk, hashr, hram;
+	printf("still there!\n");
 
 	ed25519_extsk(extsk, sk);
 
@@ -79,15 +82,29 @@ ED25519_FN(ed25519_sign) (const unsigned char *m, size_t mlen, const ed25519_sec
 	ed25519_hash_update(&ctx, extsk + 32, 32);
 	ed25519_hash_update(&ctx, m, mlen);
 	ed25519_hash_final(&ctx, hashr);
+	//print64("hashr", hashr);
 	expand256_modm(r, hashr, 64);
+	//printBig("r", r);
+	//exit(0);
 
 	/* R = rB */
 	ge25519_scalarmult_base_niels(&R, ge25519_niels_base_multiples, r);
+	printBig("R.t", R.t);
+	printBig("R.x", R.x);
+	printBig("R.y", R.y);
+	printBig("R.z", R.z);
+	//exit(0);
+	//print64("RS", RS); exit(0);
 	ge25519_pack(RS, &R);
+	//print64("RS", RS);
+	//exit(0);
 
 	/* S = H(R,A,m).. */
 	ed25519_hram(hram, RS, pk, m, mlen);
+	//print64("hram", hram); exit(0);
 	expand256_modm(S, hram, 64);
+	printBig("S", S);
+	//exit(0);
 
 	/* S = H(R,A,m)a */
 	expand256_modm(a, extsk, 32);
