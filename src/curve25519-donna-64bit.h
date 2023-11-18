@@ -214,9 +214,9 @@ curve25519_square_times(bignum25519 out, const bignum25519 in, uint64_t count) {
 
 		r0 = lo128(t[0]) & reduce_mask_51;
 		r1 = lo128(t[1]) & reduce_mask_51; shl128(c, t[0], 13); r1 += c;
-		print64t("c", c);
-		print64t("r0", r0);
-		print64t("r1", r1);
+		// print64t("c", c);
+		// print64t("r0", r0);
+		// print64t("r1", r1);
 		r2 = lo128(t[2]) & reduce_mask_51; shl128(c, t[1], 13); r2 += c;
 		r3 = lo128(t[3]) & reduce_mask_51; shl128(c, t[2], 13); r3 += c;
 		r4 = lo128(t[4]) & reduce_mask_51; shl128(c, t[3], 13); r4 += c; 
@@ -227,11 +227,11 @@ curve25519_square_times(bignum25519 out, const bignum25519 in, uint64_t count) {
 		r3 += c     ;  c = r3 >> 51; r3 &= reduce_mask_51;
 		r4 += c     ;  c = r4 >> 51; r4 &= reduce_mask_51;
 		r0 += c * 19;
-		print64t("r0", r0);
-		print64t("r1", r1);
-		print64t("r2", r2);
-		print64t("r3", r3);
-		print64t("r4", r4);
+		// print64t("r0", r0);
+		// print64t("r1", r1);
+		// print64t("r2", r2);
+		// print64t("r3", r3);
+		// print64t("r4", r4);
 	} while(--count);
 
 	out[0] = r0;
@@ -369,9 +369,9 @@ curve25519_contract(unsigned char *out, const bignum25519 input) {
 	t[4] += (reduce_mask_51 + 1) - 1;
 
 	/* now between 2^255 and 2^256-20, and offset by 2^255. */
-	print64t("t4 pre", t[4]);
+	//print64t("t4 pre", t[4]);
 	curve25519_contract_carry_final()
-	print64t("t4 pos", t[4]);
+	//print64t("t4 pos", t[4]);
 	#define write51full(n,shift) \
 		f = ((t[n] >> shift) | (t[n+1] << (51 - shift))); \
 		for (i = 0; i < 8; i++, f >>= 8) *out++ = (unsigned char)f;

@@ -256,14 +256,15 @@ test_main(void) {
 // test like in CurveSignatureTest.java:
 static void test1() {
 	printf("CurveSignatureTest.Test1\n");
+	int setIndex = 4;
 	// secretKeyString = "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60";
 	// publicKeyString = "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a";
 	// messageString   = "";
 	// signatureString = "e5564300c360ac729086e2cc806e828a84877f1eb8e5d974d873e065224901555fb8821590a33bacc61e39701cf9b46bd25bf5f0595bbe24655141438e7a100b";
-	unsigned char *secretKey = dataset[0].sk;
-	unsigned char *publicKey = dataset[0].pk;
-	unsigned char *msg = (unsigned char*)dataset[0].m;
-	size_t msgLen = 0;
+	unsigned char *secretKey = dataset[setIndex].sk;
+	unsigned char *publicKey = dataset[setIndex].pk;
+	unsigned char *msg = (unsigned char*)dataset[setIndex].m;
+	size_t msgLen = setIndex; // lol
 	ed25519_public_key pubk;
 	ed25519_publickey(secretKey, pubk);
 	ed25519_signature sig;
@@ -272,6 +273,11 @@ static void test1() {
 	//printf("%02x\n", publicKey[0]);
 	ed25519_sign(msg, msgLen, secretKey, pubk, sig);
 	print64("sig", sig);
+	edassert_equal_round(dataset[setIndex].sig, sig, sizeof(sig), setIndex, "signature didn't match");
+	//msg = (unsigned char*)"0000";
+	int res = ed25519_sign_open(msg, msgLen, pubk, sig);
+	printf("sign_open: %d\n", res);
+	edassert(!res, setIndex, "sig not verified");
 }
 
 int

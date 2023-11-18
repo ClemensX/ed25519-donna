@@ -68,8 +68,12 @@ typedef unsigned char hash_512bits[64];
 static int
 ed25519_verify(const unsigned char *x, const unsigned char *y, size_t len) {
 	size_t differentbits = 0;
-	while (len--)
+	while (len--) {
 		differentbits |= (*x++ ^ *y++);
+		//printLong(differentbits); printf("\n");
+	}
+	int ret = (int) (1 & ((differentbits - 1) >> 8));
+	//printLong(ret); printf("\n");
 	return (int) (1 & ((differentbits - 1) >> 8));
 }
 

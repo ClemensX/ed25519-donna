@@ -73,7 +73,7 @@ ED25519_FN(ed25519_sign) (const unsigned char *m, size_t mlen, const ed25519_sec
 	bignum256modm r, S, a;
 	ge25519 ALIGN(16) R;
 	hash_512bits extsk, hashr, hram;
-	printf("still there!\n");
+	//printf("still there!\n");
 
 	ed25519_extsk(extsk, sk);
 
@@ -89,10 +89,10 @@ ED25519_FN(ed25519_sign) (const unsigned char *m, size_t mlen, const ed25519_sec
 
 	/* R = rB */
 	ge25519_scalarmult_base_niels(&R, ge25519_niels_base_multiples, r);
-	printBig("R.t", R.t);
-	printBig("R.x", R.x);
-	printBig("R.y", R.y);
-	printBig("R.z", R.z);
+	// printBig("R.t", R.t);
+	// printBig("R.x", R.x);
+	// printBig("R.y", R.y);
+	// printBig("R.z", R.z);
 	//exit(0);
 	//print64("RS", RS); exit(0);
 	ge25519_pack(RS, &R);
@@ -103,7 +103,6 @@ ED25519_FN(ed25519_sign) (const unsigned char *m, size_t mlen, const ed25519_sec
 	ed25519_hram(hram, RS, pk, m, mlen);
 	//print64("hram", hram); exit(0);
 	expand256_modm(S, hram, 64);
-	printBig("S", S);
 	//exit(0);
 
 	/* S = H(R,A,m)a */
@@ -112,11 +111,18 @@ ED25519_FN(ed25519_sign) (const unsigned char *m, size_t mlen, const ed25519_sec
 
 	/* S = (r + H(R,A,m)a) */
 	add256_modm(S, S, r);
+	//printBig("S", S);
+	//exit(0);
 
 	/* S = (r + H(R,A,m)a) mod L */	
 	contract256_modm(RS + 32, S);
+	//print64("RS", RS);
+	//exit(0);
 }
 
+/*
+ * returns 0 for success, -1 for msg invalid
+ */
 int
 ED25519_FN(ed25519_sign_open) (const unsigned char *m, size_t mlen, const ed25519_public_key pk, const ed25519_signature RS) {
 	ge25519 ALIGN(16) R, A;
@@ -126,6 +132,9 @@ ED25519_FN(ed25519_sign_open) (const unsigned char *m, size_t mlen, const ed2551
 
 	if ((RS[63] & 224) || !ge25519_unpack_negative_vartime(&A, pk))
 		return -1;
+	//exit(0);
+	// x y z t
+	printBig("A.x", A.x);
 
 	/* hram = H(R,A,m) */
 	ed25519_hram(hash, RS, pk, m, mlen);
@@ -133,6 +142,8 @@ ED25519_FN(ed25519_sign_open) (const unsigned char *m, size_t mlen, const ed2551
 
 	/* S */
 	expand256_modm(S, RS + 32, 32);
+	//print("s2", s2);
+
 
 	/* SB - H(R,A,m)A */
 	ge25519_double_scalarmult_vartime(&R, &A, hram, S);

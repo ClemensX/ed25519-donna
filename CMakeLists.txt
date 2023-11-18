@@ -1,10 +1,12 @@
 cmake_minimum_required(VERSION 3.24)
 project(ed25519 C)
 
-set(CMAKE_C_STANDARD 11)
-#add_compile_options(-Wall -Wextra -pedantic -Werror)
-add_compile_options(-Wall -Wextra -Werror -Wno-error=unused-variable -Wno-error=unused-function
--Wno-error=implicit-function-declaration)
+#set(CMAKE_C_STANDARD 11)
+#msvc:
+add_compile_options(-Wall -pedantic)
+#mac:
+#add_compile_options(-Wall -Wextra -Werror -Wno-error=unused-variable -Wno-error=unused-function
+#-Wno-error=implicit-function-declaration)
 add_definitions(-DED25519_REFHASH)
 add_definitions(-DED25519_TEST)
 add_definitions(-DED25519_NO_INLINE_ASM)
@@ -22,3 +24,4 @@ target_link_libraries(test ed25519)
 # cmake -S . -B build
 # cmake --build ./build
 # ./build/test
+# or win: "C:\dev\cpp\ed25519-donna\build\Debug\test.exe"

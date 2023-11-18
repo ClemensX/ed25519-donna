@@ -10,7 +10,7 @@ static void printLong(const unsigned long l) {
 }
 
 typedef uint64_t bignum25519[5];
-static void printBig(const char* txt, bignum25519 v) {
+static void printBig(const char* txt, const bignum25519 v) {
 	int i;
     printf("%s ", txt); printf("%016llx ", v[0]); printf("%016llx ", v[1]);printf("%016llx ", v[2]);printf("%016llx ", v[3]);printf("%016llx ", v[4]);printf("\n");
 }
@@ -33,6 +33,11 @@ static void print64(const char* txt, const unsigned char* a) {
 static void print96(const char* txt, const unsigned char* a) {
 	int i;
     printf("%s ", txt); for (i = 0; i < 96; i++) printf("%02x", a[i]); printf("\n");
+}
+
+static void printN(const char* txt, const unsigned char* a, int length) {
+	int i;
+    printf("%s ", txt); for (i = 0; i < length; i++) printf("%02x", a[i]); printf("\n");
 }
 
 /*static void print128(const char* txt, __uint128_t a) {

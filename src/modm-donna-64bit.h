@@ -114,10 +114,10 @@ barrett_reduce256_modm(bignum256modm r, const bignum256modm q1, const bignum256m
 	pb += r2[3]; b = lt_modm(r1[3], pb); r[3] = (r1[3] - pb + (b << 56)); pb = b;
 	pb += r2[4]; b = lt_modm(r1[4], pb); r[4] = (r1[4] - pb + (b << 40)); 
 
-    printB256modm("r b256", r);
+    //printB256modm("r b256", r);
 	reduce256_modm(r);
 	reduce256_modm(r);
-    printB256modm("r b256", r);
+    //printB256modm("r b256", r);
 }
 
 
@@ -126,6 +126,7 @@ add256_modm(bignum256modm r, const bignum256modm x, const bignum256modm y) {
 	bignum256modm_element_t c;
 
 	c  = x[0] + y[0]; r[0] = c & 0xffffffffffffff; c >>= 56;
+	print64t("c", c);
 	c += x[1] + y[1]; r[1] = c & 0xffffffffffffff; c >>= 56;
 	c += x[2] + y[2]; r[2] = c & 0xffffffffffffff; c >>= 56;
 	c += x[3] + y[3]; r[3] = c & 0xffffffffffffff; c >>= 56;
@@ -165,6 +166,7 @@ mul256_modm(bignum256modm r, const bignum256modm x, const bignum256modm y) {
 
 static void
 expand256_modm(bignum256modm out, const unsigned char *in, size_t len) {
+	printN("modm", in, len);
 	unsigned char work[64] = {0};
 	bignum256modm_element_t x[16];
 	bignum256modm q1;
